@@ -1,0 +1,81 @@
+<aside class="sidebar"> 
+    <h2 style="color: azure; font-size: 30px;">Snapgram</h2>
+    <% if (user) { %>
+        <ul>
+            <li> <i class="fa-solid fa-house" style="color: white;"></i> <a href="/">Home</a></li>
+            <li> <i class="fa-solid fa-user" style="color: white;"></i> <a href="/profile">Profile</a></li>
+            <li onclick="showNotifications()" style="cursor: pointer;">
+                <i class="fa-solid fa-bell" style="color: white;"></i> <a href="#">Notifications</a>
+            </li>
+            
+            <li> <i class="fa-solid fa-message" style="color: white;"></i> <a href="/messages">Messages</a></li>
+            <li> <i class="fa-solid fa-plus" style="color: white;"></i> <a href="/create">Create</a></li>
+            <li> <i class="fa-solid fa-right-from-bracket" style="color: white;"></i> <a href="/auth/logout">Logout</a></li>
+            
+        </ul>
+    <% } else { %>
+        <ul>
+            <li><i class="fas fa-sign-in-alt"></i> <a href="/auth/login">Login</a></li>
+            <li><i class="fas fa-user-plus"></i> <a href="/auth/register">Sign Up</a></li>
+        </ul>
+    <% } %>
+</aside>  
+
+<div id="overlay" onclick="hideNotifications()"></div>
+
+
+<div id="notificationSection">
+    <p>You don't receive any notifications.</p>
+    <span id="closeBtn" onclick="hideNotifications()">Close</span>
+</div>
+
+<script>
+    function showNotifications() {
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("notificationSection").style.display = "block";
+    }
+
+    function hideNotifications() {
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("notificationSection").style.display = "none";
+    }
+</script>
+<style>
+    /* Blurred Background Overlay */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(8px); 
+    background: rgba(0, 0, 0, 0.4); 
+    z-index: 9998; 
+}
+
+
+#notificationSection {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #222;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 9999;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+
+#closeBtn {
+    cursor: pointer;
+    color: red;
+    font-size: 18px;
+    font-weight: bold;
+}
+</style>

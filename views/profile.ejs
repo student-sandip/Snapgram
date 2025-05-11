@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Style for the dialog */
+        .dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .dialog-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+        }
+        .dialog button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome, <%= user.username %></h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/create">Create</a>
+            <a href="/auth/logout">Logout</a>
+        </nav>
+    </header>
+
+    <section class="profile">
+        <h2>Your Profile</h2>
+        <img src="<%= user.profilePicture %>" alt="Profile Picture" class="profile-pic" id="openDialog" style="cursor: pointer"> 
+        <p>Username: <%= user.username %></p>
+        <p>Email: <%= user.email %></p>
+        <p>Followers: <%= user.followers > 0 ? user.followers : 0 %> | Following: <%= user.following > 0 ? user.following : 0 %></p>
+    </section>
+
+    <h3 style="margin: 20px;">Your Posts</h3>
+    <section class="posts" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <% user.posts.forEach(post => { %>
+            <div class="post" style="height: 30rem;">
+                <img src="<%= post.image %>" alt="Post Image">
+                <p><%= post.caption %></p>
+            </div>
+        <% }) %>
+    </section>
+
+    <!-- Dialog box -->
+    <div id="editDialog" class="dialog">
+        <div class="dialog-content">
+            <h3>Change Profile Picture & Username</h3>
+            <form action="/profile/update" method="POST" enctype="multipart/form-data">
+                <div>
+                    <label for="username">New Username:</label>
+                    <!-- Set the current username as the default value in the input field -->
+                    <input type="text" id="username" name="username" placeholder="Enter new username" value="<%= user.username %>">
+                </div>
+                <div>
+                    <label for="profilePic">Profile Picture:</label>
+                    <input type="file" id="profilePic" name="profilePic" accept="image/*">
+                </div>
+                <button type="submit">Update Profile</button>
+                <button type="button" id="closeDialog">Cancel</button>
+            </form>
+        </div>
+    </div>
+    
+
+    <script>
+        // Get the dialog and button
+        const openDialogButton = document.getElementById('openDialog');
+        const dialog = document.getElementById('editDialog');
+        const closeDialogButton = document.getElementById('closeDialog');
+
+        // Open the dialog
+        openDialogButton.addEventListener('click', function() {
+            dialog.style.display = 'flex';
+        });
+
+        // Close the dialog
+        closeDialogButton.addEventListener('click', function() {
+            dialog.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

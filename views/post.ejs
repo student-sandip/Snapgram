@@ -1,0 +1,105 @@
+<section class="posts">
+  <% posts.forEach(post => { %>
+  <div class="post" style="padding: 1rem; position: relative;">
+    <div class="post-header" style="display: flex; align-items: center">
+      <img
+        src="<%= post.user.profilePicture %>"
+        alt="User"
+        style="width:3rem; height: 3rem; margin-right: 1rem; border-radius: 50%;"
+      />
+      <h3><%= post.user.username %></h3>
+    </div>
+    <div class="" style="width: 83%; height: 40rem; margin: 0 auto">
+      <img
+        src="<%= post.image %>"
+        alt="Post Image"
+        class="post-img"
+        style="height: 100%"
+      />
+      <p style="padding: 0.5rem 3rem; margin: 0;"><b><%= post.user.username %></b> <%= post.caption %></p>
+    </div>
+    
+    <!-- Comment Section -->
+    <div class="comments" id="comments-<%= post._id %>" 
+         style="width: 100%; background: rgba(255, 255, 255, 1); padding: 1.5rem; border-radius: 10px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); display: none; margin-top: 1rem;">
+      <h4 style="margin-bottom: 0.5rem; text-align: center;">Comments</h4>
+      <% post.comments.forEach(comment => { %>
+        <p style="padding: 0.2rem 0;"><strong><%= comment.user %></strong>: <%= comment.comment %></p>
+      <% }) %>
+      <button onclick="toggleComments('<%= post._id %>')" style="display: block; margin: 1rem auto; padding: 0.5rem 1rem; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer;">Close</button>
+    </div>
+
+    <!-- Add Comment Form -->
+    <form action="/posts/<%= post._id %>/comment" method="POST" id="comment-form-<%= post._id %>"
+          style="width: 100%; background: rgba(255, 255, 255, 1); padding: 1rem; border-radius: 10px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); display: none; margin-top: 1rem;">
+      <input type="text" name="comment" placeholder="Add a comment..." required
+             style="width: 75%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 5px;">
+      <button type="submit" style="padding: 0.5rem 1rem; border: none; background: #28a745; color: white; border-radius: 5px; cursor: pointer;">Comment</button>
+    </form>
+
+    <div
+      class="post-actions"
+      style="
+        margin-top: 3rem;
+        display: flex;
+        justify-content: space-evenly;
+        font-size: 20px;
+      "
+    >
+      <div class="" style="display: flex; cursor: pointer;" onclick="likePost('<%= post._id %>')">
+        <i id="like-icon-<%= post._id %>" 
+          class="<%= post.likes.includes(user._id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart' %>" 
+          style="color: red;">
+       </i>       
+        <p id="like-count-<%= post._id %>" style="margin: 0 0 0 5px; padding: 0;">
+          <%= post.likes.length %>
+        </p>
+      </div>
+      <div class="" style="display: flex; cursor: pointer;" onclick="toggleComments('<%= post._id %>')">
+        <i class="fa-regular fa-comment"></i>
+        <p style="margin: 0 0 0 5px; padding: 0;"><%= post.comments.length %></p>
+      </div>
+      <div class=""><i class="fa-regular fa-share-from-square"></i></div>
+    </div>
+  </div>
+  <% }) %>
+</section>
+
+<script>
+  function toggleComments(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    const commentForm = document.getElementById(`comment-form-${postId}`);
+    
+    if (commentsSection.style.display === "none") {
+      commentsSection.style.display = "block";
+      commentForm.style.display = "block";
+    } else {
+      commentsSection.style.display = "none";
+      commentForm.style.display = "none";
+    }
+  }
+   function likePost(postId) {
+    fetch(`/posts/${postId}/like`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      const likeIcon = document.getElementById(`like-icon-${postId}`);
+      const likeCount = document.getElementById(`like-count-${postId}`);
+
+      if (likeIcon.classList.contains("fa-solid")) {
+        likeIcon.classList.remove("fa-solid");
+        likeIcon.classList.add("fa-regular");
+      } else {
+        likeIcon.classList.remove("fa-regular");
+        likeIcon.classList.add("fa-solid");
+      }
+
+      likeCount.innerText = data.likes;
+    })
+    .catch(error => console.error('Error liking post:', error));
+  }
+</script>

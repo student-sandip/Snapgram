@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Snapgram</title>
+
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+      
+        :root {
+            --bg-color: #000;
+            --sidebar-bg: #111;
+            --text-color: white;
+            --input-bg: #222;
+            --border-color: #333;
+            --sent-msg: #075E54;
+            --received-msg: #262d31;
+        }
+
+        .light-mode {
+            --bg-color: #f8f9fa;
+            --sidebar-bg: #fff;
+            --text-color: black;
+            --input-bg: #ddd;
+            --border-color: #ccc;
+            --sent-msg: #007bff;
+            --received-msg: #e1e1e1;
+        }
+
+        .sidebar {
+            width: 25%;
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .search {
+            width: 90%;
+            padding: 10px;
+            margin: 10px auto;
+            border-radius: 20px;
+            border: none;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .mode-switcher {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .mode-switcher select {
+            width: 90%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .chats {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .chat {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chat:hover {
+            background-color: var(--input-bg);
+        }
+
+        .chat img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .chat-info h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .chat-info p {
+            font-size: 12px;
+            color: gray;
+        }
+
+        /* Chat Window (Right Panel) */
+        .chat-window {
+            width: 75%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+            position: relative;
+        }
+
+        .chat-header {
+            background-color: var(--sidebar-bg);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chat-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .chat-body {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            max-width: 60%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 10px;
+            word-wrap: break-word;
+        }
+
+        .sent {
+            background-color: var(--sent-msg);
+            color: white;
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .received {
+            background-color: var(--received-msg);
+            color: white;
+            align-self: flex-start;
+            text-align: left;
+        }
+
+        /* Chat Input */
+        .chat-input {
+            display: flex;
+            background-color: var(--sidebar-bg);
+            padding: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .chat-input button {
+            background-color: var(--sent-msg);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            margin-left: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .chat-input button:hover {
+            background-color: #128C7E;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar (Chats List + Mode Switcher) -->
+    <div class="sidebar">
+        <input type="text" class="search" placeholder="Search or start new chat">
+        
+        <!-- Mode Switcher -->
+        <div class="mode-switcher">
+            <select id="theme-selector" onchange="changeTheme()">
+                <option value="system">System Default</option>
+                <option value="light">Light Mode</option>
+                <option value="dark">Dark Mode</option>
+            </select>
+        </div>
+
+        <div class="chats">
+            <% if (chats && chats.length > 0) { %>
+                <% chats.forEach(chat => { %>
+                    <div class="chat" onclick="openChat('<%= chat.username %>')">
+                        <img src="<%= chat.avatar %>" alt="User">
+                        <div class="chat-info">
+                            <h4><%= chat.username %></h4>
+                            <p><%= chat.lastMessage %></p>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p style="text-align: center; color: gray;">No chats available</p>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="chat-window">
+        <div class="chat-header">
+            <img src="/images/default-avatar.png" alt="User">
+            <h3 id="chat-username">Chat Name</h3>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="message received">Hey, how are you?</div>
+            <div class="message sent">I'm good, how about you?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <script>
+        function changeTheme() {
+            const selectedTheme = document.getElementById("theme-selector").value;
+            if (selectedTheme === "system") {
+                document.body.className = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark-mode" : "light-mode";
+            } else {
+                document.body.className = selectedTheme + "-mode";
+            }
+            localStorage.setItem("theme", selectedTheme);
+        }
+
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem("theme") || "system";
+            document.getElementById("theme-selector").value = savedTheme;
+            changeTheme();
+        }
+
+        window.onload = applySavedTheme;
+    </script>
+
+</body>
+</html>

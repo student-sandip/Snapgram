@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Posts</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Style for the dialog */
+        .dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .dialog-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+        }
+        .dialog button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome, <%= user.username %></h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/auth/logout">Logout</a>
+        </nav>
+    </header>
+
+    <section class="posts" style="border: 1px solid rgb(125, 153, 125);">
+        <form action="/create" method="POST" enctype="multipart/form-data">
+            <input type="text" name="caption" placeholder="Write a caption..." required>
+            <input type="file" name="image" required>
+            <button type="submit">Post</button>
+        </form>
+        <% posts.forEach(post => { %>
+            <div class="post">
+                <div class="post-header">
+                    <img src="<%= post.userImage %>" alt="User">
+                    <h3><%= post.username %></h3>
+                </div>
+                <img src="<%= post.image %>" alt="Post Image" class="post-img">
+                <div class="post-actions">
+                    <i class="fas fa-heart"></i>
+                    <i class="fas fa-comment"></i>
+                    <i class="fas fa-share"></i>
+                </div>
+                <p>Liked by <b><%= post.likes.length %></b> people</p>
+                <p><b><%= post.username %></b> <%= post.caption %></p>
+            </div>
+        <% }) %>
+    </section>
