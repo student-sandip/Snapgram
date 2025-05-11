@@ -4,6 +4,7 @@ const multer = require('multer');
 const Post = require('../models/Post');
 const router = express.Router();
 const upload = multer({ dest: 'public/uploads/' });
+const User = require("../models/User");
 
 // Create a Post
 router.post('/create', upload.single('image'), (req, res) => {
@@ -70,6 +71,21 @@ try {
     console.error('Upload failed:', error);
     res.status(500).json({ message: 'Upload failed' });
   }    
+});
+
+router.post('/delete-post/:id/:userId', async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.params.userId;
+    await Post.findByIdAndDelete(postId);
+    await User.findByIdAndUpdate(userId, {
+      $pull: { posts: postId }
+    });
+    res.redirect('/profile');
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    res.status(500).send('Server Error');
+  }
 });
 
 module.exports = router;

@@ -1,100 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Profile</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css" />
     <style>
-        /* Style for the dialog */
-        .dialog {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .dialog-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 400px;
-            width: 100%;
-        }
-        .dialog button {
-            margin-top: 10px;
-        }
+      /* Shared dialog style */
+      .dialog {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .dialog-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+      .dialog button {
+        margin-top: 10px;
+      }
+      /* Enhanced delete dialog styling */
+#deleteConfirmDialog .dialog-content {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  border-radius: 12px;
+  padding: 30px;
+  animation: fadeInScale 0.3s ease-in-out;
+}
+
+#deleteConfirmDialog h3 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+#deleteConfirmDialog button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#deleteConfirmDialog #confirmDeleteBtn {
+  background-color: #e53935;
+  color: white;
+}
+
+#deleteConfirmDialog #confirmDeleteBtn:hover {
+  background-color: #c62828;
+}
+
+#deleteConfirmDialog #cancelDeleteBtn {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+#deleteConfirmDialog #cancelDeleteBtn:hover {
+  background-color: #bdbdbd;
+}
+
+@keyframes fadeInScale {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <h1>Welcome, <%= user.username %></h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/create">Create</a>
-            <a href="/auth/logout">Logout</a>
-        </nav>
+      <h1>Welcome, <%= user.username %></h1>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/create">Create</a>
+        <a href="/auth/logout">Logout</a>
+      </nav>
     </header>
 
     <section class="profile">
-        <h2>Your Profile</h2>
-        <img src="<%= user.profilePicture %>" alt="Profile Picture" class="profile-pic" id="openDialog" style="cursor: pointer"> 
-        <p>Username: <%= user.username %></p>
-        <p>Email: <%= user.email %></p>
-        <p>Followers: <%= user.followers > 0 ? user.followers : 0 %> | Following: <%= user.following > 0 ? user.following : 0 %></p>
+      <h2>Your Profile</h2>
+      <img
+        src="<%= user.profilePicture %>"
+        alt="Profile Picture"
+        class="profile-pic"
+        id="openDialog"
+        style="cursor: pointer"
+      />
+      <p>Username: <%= user.username %></p>
+      <p>Email: <%= user.email %></p>
+      <p>
+        Followers: <%= user.followers > 0 ? user.followers : 0 %> |
+        Following: <%= user.following > 0 ? user.following : 0 %>
+      </p>
     </section>
 
-    <h3 style="margin: 20px;">Your Posts</h3>
-    <section class="posts" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-        <% user.posts.forEach(post => { %>
-            <div class="post" style="height: 30rem;">
-                <img src="<%= post.image %>" alt="Post Image">
-                <p><%= post.caption %></p>
-            </div>
-        <% }) %>
-    </section>
-
-    <!-- Dialog box -->
-    <div id="editDialog" class="dialog">
-        <div class="dialog-content">
-            <h3>Change Profile Picture & Username</h3>
-            <form action="/profile/update" method="POST" enctype="multipart/form-data">
-                <div>
-                    <label for="username">New Username:</label>
-                    <!-- Set the current username as the default value in the input field -->
-                    <input type="text" id="username" name="username" placeholder="Enter new username" value="<%= user.username %>">
-                </div>
-                <div>
-                    <label for="profilePic">Profile Picture:</label>
-                    <input type="file" id="profilePic" name="profilePic" accept="image/*">
-                </div>
-                <button type="submit">Update Profile</button>
-                <button type="button" id="closeDialog">Cancel</button>
+    <h3 style="margin: 20px">Your Posts</h3>
+    <section
+      class="posts"
+      style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px"
+    >
+      <% user.posts.forEach(post => { %>
+      <div
+        class="post"
+        style="height: 30rem; position: relative; border: 1px solid #ccc; border-radius: 8px; overflow: hidden;"
+      >
+        <!-- 3-dot menu -->
+        <div
+          class="menu-container"
+          style="position: absolute; top: 10px; right: 10px"
+        >
+          <div
+            class="menu-dots"
+            onclick="toggleMenu('<%= post._id %>')"
+            style="cursor: pointer"
+          >
+            &#8942;
+          </div>
+          <div
+            class="dropdown-menu"
+            id="menu-<%= post._id %>"
+            style="display: none; position: absolute; top: 20px; right: 0; background: white; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); z-index: 10;"
+          >
+            <form
+              onsubmit="return openDeleteDialog(event, '<%= post._id %>', '<%= user.id %>')"
+              style="margin: 0; padding: 0"
+            >
+              <button
+                type="submit"
+                style="padding: 8px 12px; background: none; border: none; width: 100%; text-align: left; cursor: pointer; color: black;"
+              >
+                Delete
+              </button>
             </form>
+          </div>
         </div>
+
+        <img
+          src="<%= post.image %>"
+          alt="Post Image"
+          style="width: 100%; height: 80%; object-fit: cover"
+        />
+        <p style="padding: 10px"><%= post.caption %></p>
+      </div>
+      <% }) %>
+    </section>
+
+    <!-- Edit Profile Dialog -->
+    <div id="editDialog" class="dialog">
+      <div class="dialog-content">
+        <h3>Change Profile Picture & Username</h3>
+        <form
+          action="/profile/update"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <div>
+            <label for="username">New Username:</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Enter new username"
+              value="<%= user.username %>"
+            />
+          </div>
+          <div>
+            <label for="profilePic">Profile Picture:</label>
+            <input
+              type="file"
+              id="profilePic"
+              name="profilePic"
+              accept="image/*"
+            />
+          </div>
+          <button type="submit">Update Profile</button>
+          <button type="button" id="closeDialog">Cancel</button>
+        </form>
+      </div>
     </div>
-    
+
+    <!-- Delete Confirmation Dialog -->
+    <div id="deleteConfirmDialog" class="dialog">
+      <div class="dialog-content">
+        <h3>Are you sure you want to delete this post?</h3>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+          <button id="confirmDeleteBtn" style="background-color: red; color: white;">Delete</button>
+          <button id="cancelDeleteBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
 
     <script>
-        // Get the dialog and button
-        const openDialogButton = document.getElementById('openDialog');
-        const dialog = document.getElementById('editDialog');
-        const closeDialogButton = document.getElementById('closeDialog');
-
-        // Open the dialog
-        openDialogButton.addEventListener('click', function() {
-            dialog.style.display = 'flex';
+      function toggleMenu(id) {
+        const menu = document.getElementById(`menu-${id}`);
+        document.querySelectorAll(".dropdown-menu").forEach((m) => {
+          if (m.id !== `menu-${id}`) m.style.display = "none";
         });
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+      }
 
-        // Close the dialog
-        closeDialogButton.addEventListener('click', function() {
-            dialog.style.display = 'none';
-        });
+      document.addEventListener("click", function (e) {
+        if (!e.target.closest(".menu-container")) {
+          document.querySelectorAll(".dropdown-menu").forEach((m) => (m.style.display = "none"));
+        }
+      });
+
+      // Profile Edit Dialog Logic
+      const openDialogButton = document.getElementById("openDialog");
+      const dialog = document.getElementById("editDialog");
+      const closeDialogButton = document.getElementById("closeDialog");
+
+      openDialogButton.addEventListener("click", function () {
+        dialog.style.display = "flex";
+      });
+      closeDialogButton.addEventListener("click", function () {
+        dialog.style.display = "none";
+      });
+
+      // Delete Dialog Logic
+      let postIdToDelete = null;
+      let userIdToDelete = null;
+
+      function openDeleteDialog(event, postId, userId) {
+        event.preventDefault();
+        postIdToDelete = postId;
+        userIdToDelete = userId;
+        document.getElementById("deleteConfirmDialog").style.display = "flex";
+        return false;
+      }
+
+      document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = `/posts/delete-post/${postIdToDelete}/${userIdToDelete}`;
+        document.body.appendChild(form);
+        form.submit();
+      });
+
+      document.getElementById("cancelDeleteBtn").addEventListener("click", () => {
+        document.getElementById("deleteConfirmDialog").style.display = "none";
+        postIdToDelete = null;
+        userIdToDelete = null;
+      });
+
+      // Optional: Close delete dialog on outside click
+      window.addEventListener("click", function (e) {
+        if (e.target === document.getElementById("deleteConfirmDialog")) {
+          document.getElementById("deleteConfirmDialog").style.display = "none";
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
