@@ -21,7 +21,6 @@ router.post('/create', upload.single('image'), (req, res) => {
         .catch(err => res.send(err));
 });
 
-// Add a comment to a post
 router.post('/:postId/comment', async (req, res) => {
     try {
         const post = await Post.findById(req.params.postId);
@@ -35,7 +34,6 @@ router.post('/:postId/comment', async (req, res) => {
     }
 });
 
-// Like a post
 router.post('/:postId/like', async (req, res) => {
     try {
         const post = await Post.findById(req.params.postId);

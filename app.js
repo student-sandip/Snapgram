@@ -25,15 +25,14 @@ app.use(passport.session());
 
 app.use(flash());
 
-// Global variables for flash messages
 app.use((req, res, next) => {
-    res.locals.user = req.user || null; // ✅ Makes user available in templates
+    res.locals.user = req.user || null; 
     res.locals.error = req.flash('error');
     res.locals.success = req.flash('success');
     next();
 });
 
-// Routes (Import routes)
+
 const indexRoutes = require('./routes/suggestedUsers');  // Home route
 const authRoutes = require('./routes/auth');  // Authentication routes (login, register, logout)
 const postRoutes = require('./routes/post');  // Routes for posts (create, like, comment)

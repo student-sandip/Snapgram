@@ -23,7 +23,6 @@ router.get('/', isuserLoggeddIn, (req, res) => {
     res.render('create', { user: req.user, posts: [] }); // Pass an empty array for posts initially
 });
 
-// ✅ POST route to handle post creation
 router.post('/', isuserLoggeddIn, upload.single('image'), async (req, res) => {
     try {
         const { caption } = req.body;
