@@ -5,23 +5,16 @@ const session = require('express-session');
 const path = require('path');
 const flash = require('connect-flash');
 require('dotenv').config();
-
-// Initialize the app
 const app = express();
 
-// Middleware
-app.use(express.urlencoded({ extended: true }));  // To handle form submissions
-app.use(express.json());  // For handling JSON data
-app.use(express.static(path.join(__dirname, 'public')));  // Serve static files (like images, CSS, JS)
-app.set('view engine', 'ejs');  // Set EJS as the templating engine
-
-// MongoDB connection
+app.use(express.urlencoded({ extended: true }));  
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
 mongoose.connect('mongodb://127.0.0.1:27017/snap', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.log(err));
-
-// Passport.js setup (for authentication)
-require('./config/passport')(passport);  // Passport configuration
+require('./config/passport')(passport);  
 app.use(session({
     secret: process.env.SESSION_SECRET || 'secret',  // Session secret, can be stored in .env
     resave: false,
@@ -59,7 +52,7 @@ app.use('/create', createRoutes);  // Routes for chat
 app.use('/messages', chatRoutes);  // Routes for chat
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

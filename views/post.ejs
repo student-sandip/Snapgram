@@ -1,41 +1,219 @@
 <section class="posts">
   <% posts.forEach(post => { %>
-  <div class="post" style="padding: 1rem; position: relative;">
+  <div class="post" style="padding: 1rem; position: relative">
     <div class="post-header" style="display: flex; align-items: center">
       <img
         src="<%= post.user.profilePicture %>"
         alt="User"
-        style="width:3rem; height: 3rem; margin-right: 1rem; border-radius: 50%;"
+        style="
+          width: 3rem;
+          height: 3rem;
+          margin-right: 1rem;
+          border-radius: 50%;
+        "
       />
       <h3><%= post.user.username %></h3>
     </div>
-    <div class="" style="width: 83%; height: 40rem; margin: 0 auto">
+    <div style="width: 83%; height: 40rem; margin: 0 auto">
       <img
         src="<%= post.image %>"
         alt="Post Image"
         class="post-img"
         style="height: 100%"
       />
-      <p style="padding: 0.5rem 3rem; margin: 0;"><b><%= post.user.username %></b> <%= post.caption %></p>
-    </div>
-    
-    <!-- Comment Section -->
-    <div class="comments" id="comments-<%= post._id %>" 
-         style="width: 100%; background: rgba(255, 255, 255, 1); padding: 1.5rem; border-radius: 10px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); display: none; margin-top: 1rem;">
-      <h4 style="margin-bottom: 0.5rem; text-align: center;">Comments</h4>
-      <% post.comments.forEach(comment => { %>
-        <p style="padding: 0.2rem 0;"><strong><%= comment.user %></strong>: <%= comment.comment %></p>
-      <% }) %>
-      <button onclick="toggleComments('<%= post._id %>')" style="display: block; margin: 1rem auto; padding: 0.5rem 1rem; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer;">Close</button>
+      <p style="padding: 0.5rem 3rem; margin: 0">
+        <b><%= post.user.username %></b> <%= post.caption %>
+      </p>
     </div>
 
-    <!-- Add Comment Form -->
-    <form action="/posts/<%= post._id %>/comment" method="POST" id="comment-form-<%= post._id %>"
-          style="width: 100%; background: rgba(255, 255, 255, 1); padding: 1rem; border-radius: 10px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); display: none; margin-top: 1rem;">
-      <input type="text" name="comment" placeholder="Add a comment..." required
-             style="width: 75%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 5px;">
-      <button type="submit" style="padding: 0.5rem 1rem; border: none; background: #28a745; color: white; border-radius: 5px; cursor: pointer;">Comment</button>
-    </form>
+    <!-- Comment Section -->
+    <div
+      class="comments"
+      id="comments-modal-<%= post._id %>"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        z-index: 999;
+        justify-content: center;
+        align-items: center;
+        overflow-y: auto;
+      "
+    >
+      <div
+        style="
+          background: white;
+          padding: 2rem;
+          border-radius: 10px;
+          width: 50%;
+          max-height: 80%;
+          overflow-y: auto;
+        "
+      >
+        <div class="">
+          <h4 style="text-align: center">Comments</h4>
+        <% if (post.comments.length === 0) { %>
+        <p style="text-align: center">No comments here</p>
+        <% } else { %> <% post.comments.forEach(comment => { %>
+        <div style="display: flex; padding: 0; width: 100%;  margin-bottom: 1rem; background-color: darkgray !important;">
+          <div style="background-color: darkgray !important;">
+            <p style="padding: 0.2rem 0; background-color: darkgray !important;" >
+              <strong><%= comment.user %></strong>
+              <span style="font-size: 12px; font-weight: 300">
+                <%= new Date(comment.createdAt).toLocaleString() %>: </span
+              ><br />
+              <strong>Comment: </strong>
+              <% if (comment.comment.startsWith('/uploads/')) { %>
+              <audio controls style="margin-top: 5px">
+                <source src="<%= comment.comment %>" type="audio/webm" />
+                Your browser does not support the audio element.
+              </audio>
+              <% } else { %>
+              <span><%= comment.comment %></span>
+              <% } %>
+            </p>
+          </div>
+        </div>
+        <% }) %> <% } %>
+        </div>
+
+        <!-- Text or Voice Comment Option -->
+        <div>
+          <button
+            type="button"
+            id="text-button-<%= post._id %>"
+            onclick="toggleCommentType('<%= post._id %>', 'text')"
+            style="
+              padding: 0.5rem 1rem;
+              border: none;
+              background: #007bff;
+              color: white;
+              border-radius: 5px;
+              cursor: pointer;
+            "
+          >
+            Text
+          </button>
+          <button
+            type="button"
+            id="voice-button-<%= post._id %>"
+            onclick="toggleCommentType('<%= post._id %>', 'voice')"
+            style="
+              padding: 0.5rem 1rem;
+              border: none;
+              background: #007bff;
+              color: white;
+              border-radius: 5px;
+              cursor: pointer;
+            "
+          >
+            Voice
+          </button>
+        </div>
+
+        <!-- Text Comment Input -->
+        <div
+          id="text-comment-input-<%= post._id %>"
+          style="display: block; margin-top: 1rem"
+        >
+          <form
+            action="/posts/<%= post._id %>/comment"
+            method="POST"
+            id="comment-form-<%= post._id %>"
+            style="display: flex; justify-content: space-between"
+          >
+            <input
+              type="text"
+              name="comment"
+              placeholder="Add a comment..."
+              required
+              style="
+                flex: 1;
+                padding: 0.5rem;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+              "
+            />
+            <button
+              type="submit"
+              style="
+                padding: 0.5rem 1rem;
+                border: none;
+                background: #28a745;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+              "
+            >
+              Done
+            </button>
+          </form>
+        </div>
+
+        <!-- Voice Comment Controls -->
+        <div
+          id="voice-comment-controls-<%= post._id %>"
+          style="display: none; margin-top: 1rem"
+        >
+          <button id="startBtn">🎙️ Start Recording</button>
+          <button id="stopBtn" disabled>⏹️ Stop Recording</button>
+        </div>
+
+        <!-- Recording Indicator Animation -->
+        <div id="recording-animation" class="hidden" style="display: none">
+          🔴 Recording...
+          <div class="waveform">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div id="preview" class="hidden" style="display: none">
+          <h4>Voice Preview:</h4>
+          <audio id="audioPlayback" controls></audio>
+        </div>
+        <div
+          class=""
+          id="sendBtn"
+          style="display: none; width: 100%; justify-content: center"
+        >
+          <button
+            type="button"
+            style="
+              padding: 0.5rem 1rem;
+              border: none;
+              background: #28a745;
+              color: white;
+              border-radius: 5px;
+              cursor: pointer;
+              width: 100%;
+            "
+            onclick="sendFunction('<%= post._id %>', event)"
+          >
+            Done
+          </button>
+        </div>
+        <button
+          onclick="closeComments('<%= post._id %>')"
+          style="
+            display: block;
+            margin: 1rem auto;
+            padding: 0.5rem 1rem;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+          "
+        >
+          Close
+        </button>
+      </div>
+    </div>
 
     <div
       class="post-actions"
@@ -46,60 +224,31 @@
         font-size: 20px;
       "
     >
-      <div class="" style="display: flex; cursor: pointer;" onclick="likePost('<%= post._id %>')">
-        <i id="like-icon-<%= post._id %>" 
-          class="<%= post.likes.includes(user._id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart' %>" 
-          style="color: red;">
-       </i>       
-        <p id="like-count-<%= post._id %>" style="margin: 0 0 0 5px; padding: 0;">
+      <div
+        style="display: flex; cursor: pointer"
+        onclick="likePost('<%= post._id %>')"
+      >
+        <i
+          id="like-icon-<%= post._id %>"
+          class="<%= post.likes.includes(user._id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart' %>"
+          style="color: red"
+        ></i>
+        <p
+          id="like-count-<%= post._id %>"
+          style="margin: 0 0 0 5px; padding: 0"
+        >
           <%= post.likes.length %>
         </p>
       </div>
-      <div class="" style="display: flex; cursor: pointer;" onclick="toggleComments('<%= post._id %>')">
+      <div
+        style="display: flex; cursor: pointer"
+        onclick="toggleComments('<%= post._id %>')"
+      >
         <i class="fa-regular fa-comment"></i>
-        <p style="margin: 0 0 0 5px; padding: 0;"><%= post.comments.length %></p>
+        <p style="margin: 0 0 0 5px; padding: 0"><%= post.comments.length %></p>
       </div>
-      <div class=""><i class="fa-regular fa-share-from-square"></i></div>
+      <div><i class="fa-regular fa-share-from-square"></i></div>
     </div>
   </div>
   <% }) %>
 </section>
-
-<script>
-  function toggleComments(postId) {
-    const commentsSection = document.getElementById(`comments-${postId}`);
-    const commentForm = document.getElementById(`comment-form-${postId}`);
-    
-    if (commentsSection.style.display === "none") {
-      commentsSection.style.display = "block";
-      commentForm.style.display = "block";
-    } else {
-      commentsSection.style.display = "none";
-      commentForm.style.display = "none";
-    }
-  }
-   function likePost(postId) {
-    fetch(`/posts/${postId}/like`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      const likeIcon = document.getElementById(`like-icon-${postId}`);
-      const likeCount = document.getElementById(`like-count-${postId}`);
-
-      if (likeIcon.classList.contains("fa-solid")) {
-        likeIcon.classList.remove("fa-solid");
-        likeIcon.classList.add("fa-regular");
-      } else {
-        likeIcon.classList.remove("fa-regular");
-        likeIcon.classList.add("fa-solid");
-      }
-
-      likeCount.innerText = data.likes;
-    })
-    .catch(error => console.error('Error liking post:', error));
-  }
-</script>

@@ -327,3 +327,135 @@ form textarea {
         font-size: 10px;
     }
 }
+.comments {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Transparent background */
+    backdrop-filter: blur(5px); /* Blur the background */
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+  }
+
+  .comments div {
+    background: white;
+    border-radius: 10px;
+    max-height: 80%;
+    overflow-y: auto;
+  }
+
+  .comments h4 {
+    text-align: center;
+  }
+
+  .comments form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+
+  .comments input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .comments button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+#recording-animation {
+  margin: 20px 0;
+  font-weight: bold;
+  color: red;
+  text-align: center;
+}
+
+.waveform {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.waveform span {
+  display: inline-block;
+  width: 6px;
+  height: 10px;
+  margin: 0 3px;
+  background: #ff4d4d;
+  animation: bounce 1s infinite ease-in-out alternate;
+}
+
+.waveform span:nth-child(2) { animation-delay: 0.1s; }
+.waveform span:nth-child(3) { animation-delay: 0.2s; }
+.waveform span:nth-child(4) { animation-delay: 0.3s; }
+.waveform span:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  from { height: 10px; }
+  to { height: 24px; }
+}
+
+.hidden {
+  display: none;
+}
+
+#preview {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#audioPlayback {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 10px;
+}
+
+#messages {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.voice-bubble {
+  background: #dcf8c6;
+  padding: 12px 16px;
+  width: 100%;
+  border-radius: 16px 16px 0 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  align-self: flex-end;
+  position: relative;
+}
+
+.voice-bubble audio {
+  width: 100%;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: #555;
+  text-align: right;
+  margin-top: 6px;
+}
