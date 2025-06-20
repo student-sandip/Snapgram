@@ -1,7 +1,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Chat = require('../models/Chat'); // Import Chat model (create it if needed)
+const Chat = require('../models/chat'); // Import Chat model (create it if needed)
 
 // Route to render messages page
 router.get('/', async (req, res) => {
