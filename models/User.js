@@ -34,7 +34,7 @@ const UserSchema = new Schema({
     }],
     profilePicture: {
         type: String,  // The profile picture will store the file path to the image
-        default: '/uploads/blank-profile-picture-973460_640.webp'  // You can use a default image path if there's no profile pic
+        default: '/uploads/blank-profile-picture-973460_640.webp'
     }
 });
 
