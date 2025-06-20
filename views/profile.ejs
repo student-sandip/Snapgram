@@ -196,7 +196,6 @@
       </div>
     </div>
 
-    <!-- Delete Confirmation Dialog -->
     <div id="deleteConfirmDialog" class="dialog">
       <div class="dialog-content">
         <h3>Are you sure you want to delete this post?</h3>
@@ -222,7 +221,6 @@
         }
       });
 
-      // Profile Edit Dialog Logic
       const openDialogButton = document.getElementById("openDialog");
       const dialog = document.getElementById("editDialog");
       const closeDialogButton = document.getElementById("closeDialog");
@@ -234,7 +232,6 @@
         dialog.style.display = "none";
       });
 
-      // Delete Dialog Logic
       let postIdToDelete = null;
       let userIdToDelete = null;
 
@@ -260,7 +257,7 @@
         userIdToDelete = null;
       });
 
-      // Optional: Close delete dialog on outside click
+
       window.addEventListener("click", function (e) {
         if (e.target === document.getElementById("deleteConfirmDialog")) {
           document.getElementById("deleteConfirmDialog").style.display = "none";
