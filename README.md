@@ -21,6 +21,7 @@ With this feature, users can **navigate and interact** with the application usin
 - `"Go to profile"`
 - `"Show feed"`
 - `"Upload a post"`
+- `"Voice Comment Option"`
 - `"Logout"`
 
 ---
